@@ -1,5 +1,5 @@
 // utils.test.js
-import { getMillisecondsFromTimestamp } from './app-utils.js';
+import { getMillisecondsFromTimestamp, getSRTFormatedTimestamp } from './app-utils.js';
 
 describe('getMillisecondsFromTimestamp', () => {
     test('converts "01:23.45" to milliseconds', () => {
@@ -23,3 +23,37 @@ describe('getMillisecondsFromTimestamp', () => {
     });
 });
 
+
+describe('getSRTFormatedTimestamp', () => {
+    test('converts 0 milliseconds correctly', () => {
+        expect(getSRTFormatedTimestamp(0)).toBe('00:00:00,000');
+    });
+
+    test('converts milliseconds less than a second correctly', () => {
+        expect(getSRTFormatedTimestamp(123)).toBe('00:00:00,123');
+    });
+
+    test('converts milliseconds to seconds correctly', () => {
+        expect(getSRTFormatedTimestamp(5000)).toBe('00:00:05,000');
+    });
+
+    test('converts milliseconds to minutes and seconds correctly', () => {
+        expect(getSRTFormatedTimestamp(65000)).toBe('00:01:05,000');
+    });
+
+    test('converts milliseconds with remaining milliseconds correctly', () => {
+        expect(getSRTFormatedTimestamp(61023)).toBe('00:01:01,023');
+    });
+
+    test('converts milliseconds with leading zeros correctly', () => {
+        expect(getSRTFormatedTimestamp(300)).toBe('00:00:00,300');
+        expect(getSRTFormatedTimestamp(100)).toBe('00:00:00,100');
+        expect(getSRTFormatedTimestamp(10)).toBe('00:00:00,010');
+        expect(getSRTFormatedTimestamp(1)).toBe('00:00:00,001');
+    });
+
+    test('handles negative milliseconds by treating as zero', () => {
+        expect(getSRTFormatedTimestamp(-1000)).toBe('00:00:00,000');
+    });
+
+});

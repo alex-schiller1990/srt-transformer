@@ -11,6 +11,7 @@ export function getMillisecondsFromTimestamp(timestamp) {
 
 // Convert to the format minute:second,millisecond
 export function getSRTFormatedTimestamp(milliseconds) {
+    milliseconds = milliseconds > 0 ? milliseconds : 0;
     const newMinutes = Math.floor(milliseconds / (60 * 1000));
     const remainingMillis = milliseconds % (60 * 1000);
     const newSeconds = Math.floor(remainingMillis / 1000);

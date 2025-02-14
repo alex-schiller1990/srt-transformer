@@ -4,7 +4,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const source = document.querySelector("#source").value.split("\n");
         const result = document.querySelector("#result");
         result.value = "";
-        console.log(source);
         let counter = 1
         for (let i = 0; i < source.length; i++) {
             if (source[i] && source[i].trim()) {
@@ -12,14 +11,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (!(line[1] && line[1].trim())) {
                     continue;
                 }
-                const startTime = calcMilliseconds(line[0].replace("[", ""),0);
-                let endTime;
+                let startMilliseconds = getMillisecondsFromTimestamp(line[0].replace("[", ""));
+                const startTime = getSRTFormatedTimestamp(startMilliseconds);
+                let endMilliseconds;
                 if (source[i + 1] && source[i + 1].trim()) {
-                    endTime = calcMilliseconds(source[i + 1].split("]")[0].replace("[", ""), 500, "subtract");
+                    endMilliseconds = getMillisecondsFromTimestamp(source[i + 1].split("]")[0].replace("[", ""));
+                    endMilliseconds = endMilliseconds > 500 ? endMilliseconds - 500 : endMilliseconds;
                 } else {
-                    endTime = calcMilliseconds(line[0].replace("[", ""), 2000);
+                    //last line
+                    endMilliseconds = getMillisecondsFromTimestamp(line[0].replace("[", "")) + 2000;
                 }
-                console.log("time", startTime, endTime);
+                const endTime = getSRTFormatedTimestamp(endMilliseconds);
+
                 result.value += `\n${counter}\n${startTime} --> ${endTime}\n${adjustLine(line[1])}\n`;
                 counter++;
             }
@@ -43,30 +46,21 @@ document.addEventListener('DOMContentLoaded', () => {
 })
 
 
-function calcMilliseconds(timestamp, milliseconds, operation) {
+function getMillisecondsFromTimestamp(timestamp) {
     // Parse the input timestamp
     const [minute, secondAndMillis] = timestamp.split(':');
     const [second, hundredths] = secondAndMillis.split('.');
 
     // Convert to total milliseconds
-    let totalMilliseconds =
-        parseInt(minute) * 60 * 1000 +
+    return parseInt(minute) * 60 * 1000 +
         parseInt(second) * 1000 +
         parseInt(hundredths) * 10;
+}
 
-    if (operation === "subtract") {
-        // Subtract the desired milliseconds
-        totalMilliseconds -= milliseconds;
-    } else {
-        totalMilliseconds += milliseconds;
-    }
-
-    // Handle underflow (e.g., negative time)
-    if (totalMilliseconds < 0) totalMilliseconds = 0;
-
-    // Convert back to the format minute:second.millisecond
-    const newMinutes = Math.floor(totalMilliseconds / (60 * 1000));
-    const remainingMillis = totalMilliseconds % (60 * 1000);
+// Convert to the format minute:second,millisecond
+function getSRTFormatedTimestamp(milliseconds) {
+    const newMinutes = Math.floor(milliseconds / (60 * 1000));
+    const remainingMillis = milliseconds % (60 * 1000);
     const newSeconds = Math.floor(remainingMillis / 1000);
     const newMillis = remainingMillis % 1000;
 
@@ -74,17 +68,8 @@ function calcMilliseconds(timestamp, milliseconds, operation) {
     return `00:${String(newMinutes).padStart(2, '0')}:${String(newSeconds).padStart(2, '0')},${String(newMillis).padStart(3, '0')}`;
 }
 
-
 function adjustLine (line) {
-    let result = line
-        .replaceAll("f*ck", "fuck")
-        .replaceAll("F*ck", "Fuck")
-        .replaceAll("sh*t", "shit")
-        .replaceAll("b*tch", "bitch")
-        .replaceAll("b**ch", "bitch")
-        .replaceAll("a**", "ass")
-        .replaceAll("f**k", "fuck")
-        .replaceAll("F**k", "Fuck");
+    let result = uncensorWords(line);
 
     if (result.length > 43 && result.length < 86) {
         if (result.includes(",")) {
@@ -101,8 +86,20 @@ function adjustLine (line) {
         }
     }
     else if (result.length >= 86) {
-        document.body.append("ACHTUNG: eine Zeile ist länger als 86 Zeichen")
+        document.body.append("ATTENTION: at least one line is longer than 86 characters");
     }
 
     return result;
+}
+
+function uncensorWords(line) {
+    return line
+        .replaceAll("f*ck", "fuck")
+        .replaceAll("F*ck", "Fuck")
+        .replaceAll("sh*t", "shit")
+        .replaceAll("b*tch", "bitch")
+        .replaceAll("b**ch", "bitch")
+        .replaceAll("a**", "ass")
+        .replaceAll("f**k", "fuck")
+        .replaceAll("F**k", "Fuck");
 }

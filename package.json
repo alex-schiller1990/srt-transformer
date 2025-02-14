@@ -1,0 +1,23 @@
+{
+  "name": "srt-transformer",
+  "version": "1.0.0",
+  "description": "Transform LRC format to SRT format",
+  "main": "index.html",
+  "scripts": {
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alex-schiller1990/srt-transformer.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/alex-schiller1990/srt-transformer/issues"
+  },
+  "homepage": "https://github.com/alex-schiller1990/srt-transformer#readme",
+  "type": "module",
+  "devDependencies": {
+    "jest": "^29.7.0"
+  }
+}

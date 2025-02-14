@@ -33,30 +33,32 @@ export function uncensorLine(line) {
         .replaceAll("F**k", "Fuck");
 }
 
-export function addLinebreaksIfNeeded(result) {
-    if (result.length > 43 && result.length < 86) {
+//TODO functionality to add more than one line break
+export function addLinebreaksIfNeeded(result, maxCharacters) {
+    maxCharacters = maxCharacters || 43;
+    if (result.length > maxCharacters && result.length < maxCharacters * 2) {
         if (result.includes(",")) {
             result = result.split(",").join(",\n");
         } else {
             let tmp = "";
-            result.split(" ").forEach(e => {
+            result.split(" ").forEach(word => {
                 if (tmp.length > result.length / 2 && !tmp.includes("\n")) {
                     tmp += "\n";
                 }
-                tmp += e + " ";
+                tmp += word + " ";
             })
             result = tmp;
         }
-    } else if (result.length >= 86) {
-        document.body.append("ATTENTION: at least one line is longer than 86 characters");
+    } else if (result.length > maxCharacters ) {
+        document.body.append(`ATTENTION: at least one line is longer than ${maxCharacters} characters`);
     }
     return result;
 }
 
-export function adjustLine (line) {
+export function adjustLine (line, maxCharacters) {
     let result = uncensorLine(line);
 
-    result = addLinebreaksIfNeeded(result);
+    result = addLinebreaksIfNeeded(result, maxCharacters);
 
     return result;
 }

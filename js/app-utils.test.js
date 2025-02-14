@@ -1,5 +1,24 @@
-// utils.test.js
-import { getMillisecondsFromTimestamp, getSRTFormatedTimestamp } from './app-utils.js';
+import { getMillisecondsFromTimestamp, getSRTFormatedTimestamp, addLinebreaksIfNeeded } from './app-utils.js';
+import { jest } from '@jest/globals';
+
+let originalDocument;
+
+beforeAll(() => {
+    // Save the original document object
+    originalDocument = global.document;
+
+    // Mock the document object
+    global.document = {
+        body: {
+            append: jest.fn(), // Mock the append method
+        },
+    };
+});
+
+afterAll(() => {
+    // Restore the original document object
+    global.document = originalDocument;
+});
 
 describe('getMillisecondsFromTimestamp', () => {
     test('converts "01:23.45" to milliseconds', () => {
@@ -54,6 +73,73 @@ describe('getSRTFormatedTimestamp', () => {
 
     test('handles negative milliseconds by treating as zero', () => {
         expect(getSRTFormatedTimestamp(-1000)).toBe('00:00:00,000');
+    });
+
+});
+
+
+describe('addLinebreaksIfNeeded', () => {
+    test('returns the same string if it is shorter than or equal to maxCharacters', () => {
+        const result = addLinebreaksIfNeeded('This is a short string.', 43);
+        expect(result).toBe('This is a short string.');
+    });
+
+    test('adds line breaks at commas if the string is between maxCharacters and maxCharacters * 2', () => {
+        const result = addLinebreaksIfNeeded('This is a longer string, with commas, that should be split.', 43);
+        expect(result).toBe('This is a longer string,\n with commas,\n that should be split.');
+    });
+
+    test('adds line breaks at spaces if the string is between maxCharacters and maxCharacters * 2 and has no commas', () => {
+        const result = addLinebreaksIfNeeded('This is a longer string without commas that should be split.', 43);
+        expect(result).toBe('This is a longer string without \ncommas that should be split. ');
+    });
+
+    test('uses default maxCharacters (43) if not provided', () => {
+        const result = addLinebreaksIfNeeded('This is a longer string, with commas, that should be split.');
+        expect(result).toBe('This is a longer string,\n with commas,\n that should be split.');
+    });
+
+    test('handles empty string correctly', () => {
+        const result = addLinebreaksIfNeeded('', 43);
+        expect(result).toBe('');
+    });
+
+    test('handles strings with no spaces or commas correctly', () => {
+        const result = addLinebreaksIfNeeded('ThisIsAStringWithNoSpacesOrCommas', 43);
+        expect(result).toBe('ThisIsAStringWithNoSpacesOrCommas');
+    });
+
+    test('handles strings exactly maxCharacters long', () => {
+        const exactLengthString = 'a'.repeat(43);
+        const result = addLinebreaksIfNeeded(exactLengthString, 43);
+        expect(result).toBe(exactLengthString);
+    });
+
+    test('adds line breaks at commas if the string is between custom maxCharacters and maxCharacters * 2', () => {
+        const result = addLinebreaksIfNeeded('This is a longer string, with commas, that should be split.', 30);
+        expect(result).toBe('This is a longer string,\n with commas,\n that should be split.');
+    });
+
+
+    test('does not add line breaks if the string is shorter than custom maxCharacters', () => {
+        const shortString = 'This is a short string.';
+        const result = addLinebreaksIfNeeded(shortString, 30);
+        expect(result).toBe(shortString);
+    });
+
+    test('adds line breaks at spaces if the string is between custom maxCharacters and maxCharacters * 2 and has no commas', () => {
+        const result = addLinebreaksIfNeeded('This is a longer string without commas that should be split', 30);
+        expect(result).toBe('This is a longer string without \ncommas that should be split ');
+    });
+
+    test('appends a warning to document.body if the string is longer than maxCharacters * 2', () => {
+        const longString = 'a'.repeat(100); // 100 is longer than 43 * 2
+        addLinebreaksIfNeeded(longString, 43);
+
+        // Check if document.body.append was called with the correct message
+        expect(document.body.append).toHaveBeenCalledWith(
+            `ATTENTION: at least one line is longer than 43 characters`
+        );
     });
 
 });

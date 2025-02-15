@@ -10,7 +10,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const source = document.querySelector("#source").value.split("\n");
         const result = document.querySelector("#result");
         result.value = "";
-        let counter = 1
+        let counter = 1;
+        const maxCharsPerLine = +document.querySelector("#max-chars-line-break").value;
         for (let i = 0; i < source.length; i++) {
             if (source[i] && source[i].trim()) {
                 const line = source[i].split("]");
@@ -29,7 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
                 const endTime = getSRTFormatedTimestamp(endMilliseconds);
 
-                result.value += `\n${counter}\n${startTime} --> ${endTime}\n${adjustLine(line[1])}\n`;
+                result.value += `\n${counter}\n${startTime} --> ${endTime}\n${adjustLine(line[1], maxCharsPerLine)}\n`;
                 counter++;
             }
         }

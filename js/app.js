@@ -12,6 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
         result.value = "";
         let counter = 1;
         const maxCharsPerLine = +document.querySelector("#max-chars-line-break").value;
+        const shouldUncensor = document.querySelector("#uncensor").checked;
         for (let i = 0; i < source.length; i++) {
             if (source[i] && source[i].trim()) {
                 const line = source[i].split("]");
@@ -30,7 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
                 const endTime = getSRTFormatedTimestamp(endMilliseconds);
 
-                result.value += `\n${counter}\n${startTime} --> ${endTime}\n${adjustLine(line[1], maxCharsPerLine)}\n`;
+                result.value += `\n${counter}\n${startTime} --> ${endTime}\n${adjustLine(line[1], maxCharsPerLine, shouldUncensor)}\n`;
                 counter++;
             }
         }

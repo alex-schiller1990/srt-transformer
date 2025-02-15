@@ -55,8 +55,11 @@ export function addLinebreaksIfNeeded(result, maxCharacters) {
     return result;
 }
 
-export function adjustLine (line, maxCharacters) {
-    let result = uncensorLine(line);
+export function adjustLine (line, maxCharacters, shouldUncensor) {
+    let result = line;
+    if (shouldUncensor) {
+        result = uncensorLine(result);
+    }
 
     result = addLinebreaksIfNeeded(result, maxCharacters);
 

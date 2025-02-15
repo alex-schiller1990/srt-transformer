@@ -21,10 +21,18 @@
             <textarea cols="120" id="source" rows="20"></textarea>
         </div>
         <div class="options">
-            <label>
-                Maximum Number of Characters per line:
-                <input type="number" id="max-chars-line-break" value="43" min="0"/>
-            </label>
+            <div>
+                <label for="max-chars-line-break">
+                    Maximum Number of Characters per line:
+                    <input type="number" id="max-chars-line-break" value="43" min="0"/>
+                </label>
+            </div>
+            <div>
+                <label>
+                    Uncensor censored words:
+                    <input type="checkbox" id="uncensor" checked/>
+                </label>
+            </div>
         </div>
         <div>
             <button class="transform">transform</button>

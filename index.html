@@ -5,27 +5,33 @@
     <title>LRC To SRT</title>
 </head>
 <body>
-    <script src="js/app.js"></script>
+    <script type="module" src="./js/app.js"></script>
 
-    LRC to SRT transformer
+    <header>
+        <h1>LRC to SRT transformer</h1>
+    </header>
 
-    <div>
-        <label for="name">Name:</label>
-        <input type="text" name="name" id="name">
-    </div>
-    <div>
-        <label for="source">LRC:</label> <br>
-        <textarea cols="120" id="source" rows="20"></textarea>
-    </div>
-    <div>
-        <button class="transform">transform</button>
-    </div>
-    <div>
-        <label for="result">SRT:</label><br>
-        <textarea cols="120" id="result" rows="20"></textarea>
-    </div>
-    <div>
-        <button class="download">download</button>
-    </div>
+    <main>
+        <div>
+            <label for="file">LRC File:</label>
+            <input id="file" type="file" accept=".lrc"/>
+        </div>
+        <div>
+            <label for="source">LRC:</label> <br>
+            <textarea cols="120" id="source" rows="20"></textarea>
+        </div>
+        <div>
+            <button class="transform">transform</button>
+        </div>
+        <div>
+            <label for="result">SRT:</label><br>
+            <textarea cols="120" id="result" rows="20"></textarea>
+        </div>
+        <div>
+            <label for="name">Name:</label>
+            <input type="text" name="name" id="name">
+            <button class="download">download</button>
+        </div>
+    </main>
 </body>
 </html>

@@ -1,6 +1,11 @@
-import {getMillisecondsFromTimestamp, getSRTFormatedTimestamp, adjustLine} from './app-utils'
+import {adjustLine, getMillisecondsFromTimestamp, getSRTFormatedTimestamp} from './app-utils.js'
 
 document.addEventListener('DOMContentLoaded', () => {
+    document.querySelector("#file").addEventListener("change", async () => {
+        const file = document.querySelector("#file").files[0];
+        document.querySelector("#source").innerHTML = await file.text();
+    });
+
     document.querySelector(".transform").addEventListener("click", ()=> {
         const source = document.querySelector("#source").value.split("\n");
         const result = document.querySelector("#result");

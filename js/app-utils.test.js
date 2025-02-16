@@ -1,24 +1,4 @@
 import { getMillisecondsFromTimestamp, getSRTFormatedTimestamp, addLinebreaksIfNeeded } from './app-utils.js';
-import { jest } from '@jest/globals';
-
-let originalDocument;
-
-beforeAll(() => {
-    // Save the original document object
-    originalDocument = global.document;
-
-    // Mock the document object
-    global.document = {
-        body: {
-            append: jest.fn(), // Mock the append method
-        },
-    };
-});
-
-afterAll(() => {
-    // Restore the original document object
-    global.document = originalDocument;
-});
 
 describe('getMillisecondsFromTimestamp', () => {
     test('converts "01:23.45" to milliseconds', () => {
@@ -86,17 +66,17 @@ describe('addLinebreaksIfNeeded', () => {
 
     test('adds line breaks at commas if the string is between maxCharacters and maxCharacters * 2', () => {
         const result = addLinebreaksIfNeeded('This is a longer string, with commas, that should be split.', 43);
-        expect(result).toBe('This is a longer string,\n with commas,\n that should be split.');
+        expect(result).toBe('This is a longer string,\nwith commas, that should be split.');
     });
 
     test('adds line breaks at spaces if the string is between maxCharacters and maxCharacters * 2 and has no commas', () => {
         const result = addLinebreaksIfNeeded('This is a longer string without commas that should be split.', 43);
-        expect(result).toBe('This is a longer string without \ncommas that should be split. ');
+        expect(result).toBe('This is a longer string without\ncommas that should be split.');
     });
 
     test('uses default maxCharacters (43) if not provided', () => {
         const result = addLinebreaksIfNeeded('This is a longer string, with commas, that should be split.');
-        expect(result).toBe('This is a longer string,\n with commas,\n that should be split.');
+        expect(result).toBe('This is a longer string,\nwith commas, that should be split.');
     });
 
     test('handles empty string correctly', () => {
@@ -117,7 +97,7 @@ describe('addLinebreaksIfNeeded', () => {
 
     test('adds line breaks at commas if the string is between custom maxCharacters and maxCharacters * 2', () => {
         const result = addLinebreaksIfNeeded('This is a longer string, with commas, that should be split.', 30);
-        expect(result).toBe('This is a longer string,\n with commas,\n that should be split.');
+        expect(result).toBe('This is a longer string,\nwith commas, that\nshould be split.');
     });
 
 
@@ -129,17 +109,7 @@ describe('addLinebreaksIfNeeded', () => {
 
     test('adds line breaks at spaces if the string is between custom maxCharacters and maxCharacters * 2 and has no commas', () => {
         const result = addLinebreaksIfNeeded('This is a longer string without commas that should be split', 30);
-        expect(result).toBe('This is a longer string without \ncommas that should be split ');
-    });
-
-    test('appends a warning to document.body if the string is longer than maxCharacters * 2', () => {
-        const longString = 'a'.repeat(100); // 100 is longer than 43 * 2
-        addLinebreaksIfNeeded(longString, 43);
-
-        // Check if document.body.append was called with the correct message
-        expect(document.body.append).toHaveBeenCalledWith(
-            `ATTENTION: at least one line is longer than 43 characters`
-        );
+        expect(result).toBe('This is a longer string\nwithout commas that\nshould be split');
     });
 
 });

@@ -33,26 +33,38 @@ export function uncensorLine(line) {
         .replaceAll("F**k", "Fuck");
 }
 
-//TODO functionality to add more than one line break
-export function addLinebreaksIfNeeded(result, maxCharacters) {
-    maxCharacters = maxCharacters || 43;
-    if (result.length > maxCharacters && result.length < maxCharacters * 2) {
-        if (result.includes(",")) {
-            result = result.split(",").join(",\n");
-        } else {
-            let tmp = "";
-            result.split(" ").forEach(word => {
-                if (tmp.length > result.length / 2 && !tmp.includes("\n")) {
-                    tmp += "\n";
-                }
-                tmp += word + " ";
-            })
-            result = tmp;
+
+function getLineTillSpace(line, maxCharacters) {
+    let result = "";
+    let lineSplit = line.split(" ");
+    for (const word of lineSplit) {
+        if (result.length > line.length / 2 || `${result} ${word}`.length > maxCharacters) {
+            break;
         }
-    } else if (result.length > maxCharacters ) {
-        document.body.append(`ATTENTION: at least one line is longer than ${maxCharacters} characters`);
+        result += word + " ";
     }
     return result;
+}
+
+export function addLinebreaksIfNeeded(line, maxCharacters) {
+    maxCharacters = maxCharacters || 43;
+    let result = "";
+    while (line.length > maxCharacters) {
+        if (line.indexOf(",") > maxCharacters / 2 && line.indexOf(",") < maxCharacters) {
+            result += line.substring(0, line.indexOf(",") +1) + "\n";
+            line = line.substring(line.indexOf(",") +1).trim();
+        } else if (line.includes(" ")){
+            let tmp = getLineTillSpace(line, maxCharacters);
+            line = line.substring(tmp.length);
+            result += tmp.trim() + "\n";
+        }
+        else {
+            result += line.substring(0, maxCharacters - 1) + "-\n";
+            line = line.substring(maxCharacters - 1);
+        }
+    }
+
+    return result + line;
 }
 
 export function adjustLine (line, maxCharacters, shouldUncensor) {

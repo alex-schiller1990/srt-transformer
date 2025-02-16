@@ -53,7 +53,7 @@ export function addLinebreaksIfNeeded(line, maxCharacters) {
         if (line.indexOf(",") > maxCharacters / 2 && line.indexOf(",") < maxCharacters) {
             result += line.substring(0, line.indexOf(",") +1) + "\n";
             line = line.substring(line.indexOf(",") +1).trim();
-        } else if (line.includes(" ")){
+        } else if (line.includes(" ") && line.indexOf(" ") < maxCharacters){
             let tmp = getLineTillSpace(line, maxCharacters);
             line = line.substring(tmp.length);
             result += tmp.trim() + "\n";

@@ -112,4 +112,9 @@ describe('addLinebreaksIfNeeded', () => {
         expect(result).toBe('This is a longer string\nwithout commas that\nshould be split');
     });
 
+    test('adds line breaks at word if the space is after maxCharacters', () => {
+        const result = addLinebreaksIfNeeded('ThisIsALongWord with a Space afterwards', 10);
+        expect(result).toBe('ThisIsALo-\nngWord\nwith a\nSpace\nafterwards');
+    });
+
 });

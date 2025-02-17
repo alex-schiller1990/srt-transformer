@@ -1,12 +1,14 @@
 export function getMillisecondsFromTimestamp(timestamp) {
-    // Parse the input timestamp
-    const [minute, secondAndMillis] = timestamp.split(':');
-    const [second, hundredths] = secondAndMillis.split('.');
+    if (timestamp && timestamp.includes(":") && timestamp.includes(".") ) {
+        // Parse the input timestamp
+        const [minute, secondAndMillis] = timestamp.split(':');
+        const [second, hundredths] = secondAndMillis?.split('.');
 
-    // Convert to total milliseconds
-    return parseInt(minute) * 60 * 1000 +
-        parseInt(second) * 1000 +
-        parseInt(hundredths) * 10;
+        // Convert to total milliseconds
+        return parseInt(minute) * 60 * 1000 +
+            parseInt(second) * 1000 +
+            parseInt(hundredths) * 10;
+    }
 }
 
 // Convert to the format minute:second,millisecond

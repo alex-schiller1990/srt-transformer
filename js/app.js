@@ -1,5 +1,40 @@
 import {adjustLine, getMillisecondsFromTimestamp, getSRTFormatedTimestamp} from './app-utils.js'
 
+function getFormattedEndTime(i, parsedLines, timestamp) {
+    let endMilliseconds;
+    if (i + 1 < parsedLines.length) {
+        endMilliseconds = parsedLines[i + 1].timestamp;
+        endMilliseconds = endMilliseconds > 500 ? endMilliseconds - 500 : endMilliseconds;
+    } else {
+        //last line
+        endMilliseconds = timestamp + 2000;
+    }
+    return getSRTFormatedTimestamp(endMilliseconds);
+}
+
+function getParsedLines(linesToParse) {
+    let result =  "";
+    if (linesToParse.length > 0) {
+        let counter = 1;
+        const maxCharsPerLine = +document.querySelector("#max-chars-line-break").value;
+        linesToParse = linesToParse.filter(line => !isNaN(line.timestamp)).sort((a, b) => a.timestamp - b.timestamp);
+        const shouldUncensor = document.querySelector("#uncensor").checked;
+
+        for (let i = 0; i < linesToParse.length; i++) {
+            const {timestamp, content} = linesToParse[i];
+            if (!(content && content.trim())) {
+                continue;
+            }
+            const startTime = getSRTFormatedTimestamp(timestamp);
+            const endTime = getFormattedEndTime(i, linesToParse, timestamp);
+
+            result += `\n${counter}\n${startTime} --> ${endTime}\n${adjustLine(content, maxCharsPerLine, shouldUncensor)}\n`;
+            counter++;
+        }
+    }
+    return result;
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     document.querySelector("#file").addEventListener("change", async () => {
         const file = document.querySelector("#file").files[0];
@@ -8,33 +43,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.querySelector(".transform").addEventListener("click", ()=> {
         const source = document.querySelector("#source").value.split("\n");
-        const result = document.querySelector("#result");
-        result.value = "";
-        let counter = 1;
-        const maxCharsPerLine = +document.querySelector("#max-chars-line-break").value;
-        const shouldUncensor = document.querySelector("#uncensor").checked;
-        for (let i = 0; i < source.length; i++) {
-            if (source[i] && source[i].trim()) {
-                const line = source[i].split("]");
-                if (!(line[1] && line[1].trim())) {
-                    continue;
-                }
-                let startMilliseconds = getMillisecondsFromTimestamp(line[0].replace("[", ""));
-                const startTime = getSRTFormatedTimestamp(startMilliseconds);
-                let endMilliseconds;
-                if (source[i + 1] && source[i + 1].trim()) {
-                    endMilliseconds = getMillisecondsFromTimestamp(source[i + 1].split("]")[0].replace("[", ""));
-                    endMilliseconds = endMilliseconds > 500 ? endMilliseconds - 500 : endMilliseconds;
-                } else {
-                    //last line
-                    endMilliseconds = getMillisecondsFromTimestamp(line[0].replace("[", "")) + 2000;
-                }
-                const endTime = getSRTFormatedTimestamp(endMilliseconds);
+        let linesToParse = [];
 
-                result.value += `\n${counter}\n${startTime} --> ${endTime}\n${adjustLine(line[1], maxCharsPerLine, shouldUncensor)}\n`;
-                counter++;
+        for (let i = 0; i < source.length; i++) {
+            if (source[i] && source[i].trim() && source[i].includes("]")) {
+                const line = source[i].split("]");
+                const content = line[line.length-1];
+                for (let j = 0; j < line.length-1; j++) {
+                    linesToParse.push({
+                        timestamp: getMillisecondsFromTimestamp(line[j].replace("[", "")),
+                        content: content,
+                    });
+                }
             }
         }
+
+        const result = document.querySelector("#result");
+        result.value = getParsedLines(linesToParse);
     })
 
     document.querySelector(".download").addEventListener("click", ()=> {

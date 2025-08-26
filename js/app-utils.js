@@ -28,11 +28,15 @@ export function uncensorLine(line) {
         .replaceAll("f*ck", "fuck")
         .replaceAll("F*ck", "Fuck")
         .replaceAll("sh*t", "shit")
+        .replaceAll("s**t", "shit")
         .replaceAll("b*tch", "bitch")
         .replaceAll("b**ch", "bitch")
+        .replaceAll("h*es", "hoes")
         .replaceAll("a**", "ass")
         .replaceAll("f**k", "fuck")
-        .replaceAll("F**k", "Fuck");
+        .replaceAll("F**k", "Fuck")
+        .replaceAll("n***a", "nigga")
+        .replaceAll("D**n", "Damn");
 }
 
 
